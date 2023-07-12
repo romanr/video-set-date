@@ -27,28 +27,24 @@ video_extensions=("mp4" "mov" "avi" "mkv" "flv" "wmv")
 # Loop through all video files in the directory
 for extension in "${video_extensions[@]}"
 do
-    for file in "$dir"/*."$extension" "$dir"/*."${extension,,}" "$dir"/*."${extension^^}"
+    find "$dir" -iname "*.$extension" | while read -r file
     do
-        # Check if file exists
-        if [ -f "$file" ]
-        then
-            # Extract Media Create Date and format it for SetFile
-            date=$(exiftool -api QuickTimeUTC=1 -d "%m/%d/%Y %H:%M:%S" -s3 -MediaCreateDate "$file")
+        # Extract Media Create Date and format it for SetFile
+        date=$(exiftool -api QuickTimeUTC=1 -d "%m/%d/%Y %H:%M:%S" -s3 -MediaCreateDate "$file")
 
-            # Depending on the mode, either print the changes or apply them
-            if [ "$mode" = "-dry-run" ]
-            then
-                echo "File: $file"
-                echo "New Creation and Modification Date: $date"
-                echo ""
-            elif [ "$mode" = "-apply" ]
-            then
-                SetFile -d "$date" -m "$date" "$file"
-            else
-                echo "Invalid mode. Please choose either -dry-run or -apply."
-                print_help
-                exit 1
-            fi
+        # Depending on the mode, either print the changes or apply them
+        if [ "$mode" = "-dry-run" ]
+        then
+            echo "File: $file"
+            echo "New Creation and Modification Date: $date"
+            echo ""
+        elif [ "$mode" = "-apply" ]
+        then
+            SetFile -d "$date" -m "$date" "$file"
+        else
+            echo "Invalid mode. Please choose either -dry-run or -apply."
+            print_help
+            exit 1
         fi
     done
 done
