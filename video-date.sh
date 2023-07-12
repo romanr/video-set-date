@@ -55,7 +55,7 @@ do
             then
                 if [ "$mode" = "-apply" ]
                 then
-                    exiftool -m '-DateTimeOriginal<CreateDate' "$file"
+                    exiftool -m -P -overwrite_original '-DateTimeOriginal<CreateDate' "$file"
                     fixed_files=$((fixed_files+1))
                 fi
             fi
